@@ -1,5 +1,6 @@
 package com.sparta.springhw01.controller;
 
+import com.google.gson.JsonObject;
 import com.sparta.springhw01.dto.PostRequestDto;
 import com.sparta.springhw01.entity.Post;
 import com.sparta.springhw01.service.PostService;
@@ -40,13 +41,16 @@ public class PostController {
 
     /* 게시글 수정 api */
     @PutMapping("/api/posts/{id}")
-    public Long updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto){
+    public Post updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto){
         return postService.update(id, requestDto);
     }
 
     /* 게시글 삭제 api */
     @DeleteMapping("/api/posts/{id}")
-    public Long deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto){
-        return postService.deletePost(id, requestDto);
+    public String deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto){
+        boolean flag = postService.deletePost(id, requestDto);
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("success", flag);
+        return jsonObj.toString();
     }
 }

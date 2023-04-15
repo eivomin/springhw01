@@ -28,7 +28,7 @@ public class PostService {
     }
 
     @Transactional
-    public Long update(Long id, PostRequestDto requestDto) {
+    public Post update(Long id, PostRequestDto requestDto) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
         );
@@ -38,17 +38,17 @@ public class PostService {
         );
 
         post.update(requestDto);
-        return post.getId();
+        return post;
     }
 
     @Transactional
-    public Long deletePost(Long id, PostRequestDto requestDto) {
+    public boolean deletePost(Long id, PostRequestDto requestDto) {
         postRepository.findByIdAndPassword(id, requestDto.getPassword()).orElseThrow(
                 () -> new IllegalArgumentException("패스워드가 일치하지 않습니다.")
         );
 
         postRepository.deleteById(id);
-        return id;
+        return true;
     }
 
     @Transactional(readOnly = true)
