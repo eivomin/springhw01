@@ -7,6 +7,8 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+	<link th:href="@{/style.css}" rel="stylesheet">
+	<script type="text/javascript" th:src="@{/basic.js}"></script>
 	<script>
 		$(document).ready(function () {
 			// HTML 문서를 로드할 때마다 실행합니다.
@@ -289,56 +291,6 @@
 			right: 17px;
 		}
 
-		.background-header {
-			position: fixed;
-			z-index: -1;
-			top: 0px;
-			width: 100%;
-			height: 428px;
-			background-color: #339af0;
-		}
-
-		.background-body {
-			position: fixed;
-			z-index: -1;
-			top: 428px;
-			height: 100%;
-			width: 100%;
-			background-color: #dee2e6;
-		}
-
-		.header {
-			margin-top: 50px;
-		}
-
-		.header h2 {
-			/*font-family: 'Noto Sans KR', sans-serif;*/
-			height: 33px;
-			font-size: 42px;
-			font-weight: 500;
-			font-stretch: normal;
-			font-style: normal;
-			line-height: 0.79;
-			letter-spacing: -0.5px;
-			text-align: center;
-			color: #ffffff;
-		}
-
-		.header p {
-			margin: 40px auto;
-			width: 217px;
-			height: 48px;
-			font-family: 'Noto Sans KR', sans-serif;
-			font-size: 16px;
-			font-weight: 500;
-			font-stretch: normal;
-			font-style: normal;
-			line-height: 1.5;
-			letter-spacing: -1.12px;
-			text-align: center;
-			color: #ffffff;
-		}
-
 		textarea.field {
 			width: 502px !important;
 			height: 146px;
@@ -454,16 +406,37 @@
 </head>
 
 <body>
-<div class="background-header">
-
+<div class="header" style="position:relative;">
+	<!--headr 추가 부분-->
+	<div id="login-true" style="display: none">
+		<div id="header-title-login-user">
+			<!--            <span th:value="${username}"></span> 님의-->
+			<div id="username"></div> 님의
+		</div>
+		<div id="header-title-select-shop">
+			게시판
+		</div>
+		<a id="login-text" href="javascript:logout()">
+			로그아웃
+		</a>
+	</div>
+	<div id="login-false" >
+		<div id="header-title-select-shop">
+			게시판
+		</div>
+		<a id="sign-text" href="/api/user/signup">
+			회원가입
+		</a>
+		<a id="login-text" href="/api/user/login">
+			로그인
+		</a>
+	</div>
+	<!--/headr 추가 부분-->
 </div>
 <div class="background-body">
 
 </div>
 <div class="wrap">
-	<div class="header">
-		<h2>게시판</h2>
-	</div>
 	<div class="area-write">
 		제목 <input name="title" th:id="title" type="text"/></br></br>
 		작성자 <input name="writer" th:id="writer" type="text"/></br></br>
