@@ -4,7 +4,7 @@
 
 1️⃣ Use case
 
-<img width="666" alt="springhw01_usecase" src="https://user-images.githubusercontent.com/97949070/232174818-63d0d4bb-aaaa-48e1-bcff-0fefe0c3bfa3.png">
+<img width="460" alt="스크린샷 2023-04-19 오전 11 03 23" src="https://user-images.githubusercontent.com/97949070/232947490-2225043b-89cc-45f3-8d20-38f6be570d04.png">
 
 2️⃣ API 설계
 
