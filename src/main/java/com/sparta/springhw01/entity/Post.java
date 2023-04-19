@@ -18,27 +18,22 @@ public class Post extends Timestamped {
     private Long id;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false)
-    private String writer;
 
     @Column(nullable = false)
     private String contents;
 
-    public Post(PostRequestDto requestDto){
-        this.password = requestDto.getPassword();
+    @Column(nullable = false)
+    private Long userId;
+
+    public Post(PostRequestDto requestDto, Long userId){
         this.title = requestDto.getTitle();
-        this.writer = requestDto.getWriter();
         this.contents = requestDto.getContents();
+        this.userId = userId;
     }
 
     public void update(PostRequestDto requestDto){
         this.title = requestDto.getTitle();
-        this.writer = requestDto.getWriter();
         this.contents = requestDto.getContents();
     }
 }
