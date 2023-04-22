@@ -1,10 +1,12 @@
 package com.sparta.springhw01.service;
 
-import com.sparta.springhw01.dto.PostRequestDto;
-import com.sparta.springhw01.dto.PostResponseDto;
+import com.sparta.springhw01.dto.CommentRequestDto;
+import com.sparta.springhw01.dto.CommentResponseDto;
+import com.sparta.springhw01.entity.Comment;
 import com.sparta.springhw01.entity.Post;
 import com.sparta.springhw01.entity.User;
 import com.sparta.springhw01.jwt.JwtUtil;
+import com.sparta.springhw01.repository.CommentRepository;
 import com.sparta.springhw01.repository.PostRepository;
 import com.sparta.springhw01.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -13,24 +15,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+
+
 
 @Service
 @RequiredArgsConstructor
-public class PostService {
+public class CommentService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
 
+    //댓글 작성하기
     @Transactional
-    public PostResponseDto createPost(PostRequestDto requestDto, HttpServletRequest request) {
+    public CommentResponseDto createComment(CommentRequestDto requestDto, HttpServletRequest request) {
+        /*
+        * - 토큰을 검사하여, 유효한 토큰일 경우에만 댓글 작성 가능
+          - 선택한 게시글의 DB 저장 유무를 확인하기
+          - 선택한 게시글이 있다면 댓글을 등록하고 등록된 댓글 반환하기
+        * */
+
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request);
         Claims claims;
 
-        // 토큰이 있는 경우에만 게시글 등록 가능
+        // 토큰을 검사하여, 유효한 토큰일 경우에만 댓글 작성 가능
         if (token != null) {
             if (jwtUtil.validateToken(token)) {
                 // 토큰에서 사용자 정보 가져오기
@@ -42,35 +52,36 @@ public class PostService {
             // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+            );
+
+            // 선택한 게시글의 DB 저장 유무를 확인하기
+            Post post = postRepository.findById(requestDto.getPostId()).orElseThrow(
+                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
 
             // 요청받은 DTO 로 DB에 저장할 객체 만들기
-            Post post = postRepository.saveAndFlush(new Post(requestDto, user));
+            Comment comment = commentRepository.saveAndFlush(new Comment(requestDto, post, user));
 
-            return new PostResponseDto(post);
+            return new CommentResponseDto(comment);
         } else {
             return null;
         }
+
+
     }
 
-    @Transactional(readOnly = true)
-    public List<PostResponseDto> getPosts() {
-        List<Post> postList = postRepository.findAllByOrderByModifiedAtDesc();
-        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-        for(Post post : postList){
-            PostResponseDto postResponseDto = new PostResponseDto(post);
-            postResponseDtoList.add(postResponseDto);
-        }
-        return postResponseDtoList;
-    }
+    public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, HttpServletRequest request) {
+        /*
+        * - 토큰을 검사한 후, 유효한 토큰이면서 해당 사용자가 작성한 댓글만 삭제 가능
+          - 선택한 댓글의 DB 저장 유무를 확인하기
+          - 선택한 댓글이 있다면 댓글 수정하고 수정된 댓글 반환하기
+        * */
 
-    @Transactional
-    public PostResponseDto update(Long id, PostRequestDto requestDto, HttpServletRequest request) {
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request);
         Claims claims;
 
-        // 토큰이 있는 경우에만 수정 가능
+        // 토큰이 있는 경우에만 댓글 수정 가능
         if (token != null) {
             // Token 검증
             if (jwtUtil.validateToken(token)) {
@@ -85,26 +96,31 @@ public class PostService {
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
-            Post post = postRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new NullPointerException("해당 게시글은 존재하지 않습니다.")
+//            // 선택한 댓글의 게시글 삭제 유무 확인하기
+//            Post post = postRepository.findById(requestDto.getPostId()).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+//            );
+
+            // 댓글 존재 유무 && 작성자 확인
+            Comment comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
+                    () -> new IllegalArgumentException("댓글이 존재하지 않거나 작성자가 불일치 합니다.")
             );
 
-            post.update(requestDto);
+            comment.update(requestDto);
 
-            return new PostResponseDto(post);
+            return new CommentResponseDto(comment);
 
         } else {
             return null;
         }
     }
 
-    @Transactional
-    public boolean deletePost(Long id, HttpServletRequest request) {
+    public boolean deleteComment(Long id, HttpServletRequest request) {
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request);
         Claims claims;
 
-        // 토큰이 있는 경우에만 관심상품 최저가 업데이트 가능
+        // 토큰 검사
         if (token != null) {
             // Token 검증
             if (jwtUtil.validateToken(token)) {
@@ -119,23 +135,14 @@ public class PostService {
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
-            Post post = postRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new NullPointerException("해당 게시글은 존재하지 않습니다.")
+            Comment comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
+                    () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
             );
 
-            postRepository.deleteById(id);
+            commentRepository.deleteById(id);
             return true;
         } else {
             return false;
         }
-
-    }
-
-    @Transactional(readOnly = true)
-    public PostResponseDto getPost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () ->  new IllegalArgumentException("존재하지 않는 게시글입니다.")
-        );
-        return new PostResponseDto(post);
     }
 }

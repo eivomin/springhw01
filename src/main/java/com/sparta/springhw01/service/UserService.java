@@ -42,7 +42,7 @@ public class UserService {
                 throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
-        }
+        }else role = UserRoleEnum.USER;
 
         User user = new User(username, password, email, role);
         userRepository.save(user);

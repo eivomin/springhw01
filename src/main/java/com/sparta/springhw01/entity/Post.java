@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -15,7 +17,12 @@ public class Post extends Timestamped {
     * */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "post_id", unique = true, nullable = false)
     private Long id;
+
+    @ManyToOne(cascade = CascadeType.MERGE, targetEntity = User.class)
+    @JoinColumn(name = "user_id", updatable = false)
+    private User user;
 
     @Column(nullable = false)
     private String title;
@@ -23,13 +30,13 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @Column(nullable = false)
-    private Long userId;
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 
-    public Post(PostRequestDto requestDto, Long userId){
+    public Post(PostRequestDto requestDto, User user){
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
-        this.userId = userId;
+        this.user = user;
     }
 
     public void update(PostRequestDto requestDto){

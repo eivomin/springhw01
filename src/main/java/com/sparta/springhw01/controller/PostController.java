@@ -31,26 +31,26 @@ public class PostController {
 
     /* 게시글 전체 목록 조회 api */
     @GetMapping("/api/posts")
-    public List<Post> getPosts(){
+    public List<PostResponseDto> getPosts(){
         return postService.getPosts();
     }
 
     /* 게시글 상세 조회 api */
     @GetMapping("/api/posts/{id}")
-    public Post getPost(@PathVariable Long id){
+    public PostResponseDto getPost(@PathVariable Long id){
         return postService.getPost(id);
     }
 
     /* 게시글 수정 api */
     @PutMapping("/api/posts/{id}")
-    public Post updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
         return postService.update(id, requestDto, request);
     }
 
     /* 게시글 삭제 api */
     @DeleteMapping("/api/posts/{id}")
-    public String deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
-        boolean flag = postService.deletePost(id, requestDto, request);
+    public String deletePost(@PathVariable Long id, HttpServletRequest request){
+        boolean flag = postService.deletePost(id, request);
         JsonObject jsonObj = new JsonObject();
 
         if(flag){

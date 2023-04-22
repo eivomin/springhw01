@@ -10,11 +10,13 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
 
     // nullable: null 허용 여부
@@ -24,9 +26,9 @@ public class User {
     @Pattern(regexp = "[a-z0-9]{4,10}", message = "알파벳 소문자(a~z), 숫자(0~9)로 구성되어야 합니다.")
     private String username;
 
-    // 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9)로 구성
+    // 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성
     @Column(nullable = false)
-    @Pattern(regexp = "[a-zA-z0-9]{8,15}", message = "알파벳 대소문자(a~z, A~Z), 숫자(0~9)로 구성되어야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,15}$", message = "알파벳 대소문자(a~z, A~Z), 숫자(0~9)로 구성되어야 합니다.")
     private String password;
 
     @Column(nullable = false, unique = true)
@@ -36,9 +38,8 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-//    고려해보기
-    @OneToMany
-    List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE, orphanRemoval = true)
+    private List<Post> postList = new ArrayList<>();
 
     public User(String username, String password, String email, UserRoleEnum role) {
         this.username = username;
