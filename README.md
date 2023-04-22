@@ -15,4 +15,5 @@ http://localhost:8080/swagger-ui/
 
 3️⃣ ERD
 
-![entityManagerFactory(EntityManagerFactoryBuilder)](https://user-images.githubusercontent.com/97949070/232949295-e805e911-2492-4743-93b9-ec4945b032f6.png)
+![ERD](https://user-images.githubusercontent.com/97949070/233754312-52cbdf92-0827-4689-bffa-60696a26668c.png)
+
