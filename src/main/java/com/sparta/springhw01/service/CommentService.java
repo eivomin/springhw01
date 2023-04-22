@@ -5,6 +5,9 @@ import com.sparta.springhw01.dto.CommentResponseDto;
 import com.sparta.springhw01.entity.Comment;
 import com.sparta.springhw01.entity.Post;
 import com.sparta.springhw01.entity.User;
+import com.sparta.springhw01.entity.UserRoleEnum;
+import com.sparta.springhw01.exception.ApiException;
+import com.sparta.springhw01.exception.ExceptionEnum;
 import com.sparta.springhw01.jwt.JwtUtil;
 import com.sparta.springhw01.repository.CommentRepository;
 import com.sparta.springhw01.repository.PostRepository;
@@ -27,7 +30,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
 
-    //댓글 작성하기
+    /* 댓글 작성 */
     @Transactional
     public CommentResponseDto createComment(CommentRequestDto requestDto, HttpServletRequest request) {
         /*
@@ -46,17 +49,17 @@ public class CommentService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
-                throw new IllegalArgumentException("Token Error");
+                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
             }
 
             // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
             );
 
             // 선택한 게시글의 DB 저장 유무를 확인하기
             Post post = postRepository.findById(requestDto.getPostId()).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                    () -> new ApiException(ExceptionEnum.INVALID_POST_EXCEPTION)
             );
 
             // 요청받은 DTO 로 DB에 저장할 객체 만들기
@@ -70,6 +73,10 @@ public class CommentService {
 
     }
 
+    /* 댓글 수정
+     * ADMIN 회원은 모든 댓굴 수정 가능
+     *  */
+    @Transactional
     public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, HttpServletRequest request) {
         /*
         * - 토큰을 검사한 후, 유효한 토큰이면서 해당 사용자가 작성한 댓글만 삭제 가능
@@ -88,23 +95,29 @@ public class CommentService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
-                throw new IllegalArgumentException("Token Error");
+                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
             }
 
             // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
             );
 
-//            // 선택한 댓글의 게시글 삭제 유무 확인하기
-//            Post post = postRepository.findById(requestDto.getPostId()).orElseThrow(
-//                    () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
-//            );
 
-            // 댓글 존재 유무 && 작성자 확인
-            Comment comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new IllegalArgumentException("댓글이 존재하지 않거나 작성자가 불일치 합니다.")
-            );
+            Comment comment = new Comment();
+
+            // 관리자 검증 여부
+            if(user.getRole().equals(UserRoleEnum.ADMIN)){
+                // ROLE == ADMIN
+                comment = commentRepository.findById(id).orElseThrow(
+                        () -> new ApiException(ExceptionEnum.INVALID_COMMENT_EXCEPTION)
+                );
+            }else{
+                // ROLE == USER
+                comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
+                        () -> new ApiException(ExceptionEnum.UNAUTHORIZED_EXCEPTION)
+                );
+            }
 
             comment.update(requestDto);
 
@@ -115,7 +128,11 @@ public class CommentService {
         }
     }
 
-    public boolean deleteComment(Long id, HttpServletRequest request) {
+    /* 댓글 삭제
+     * ADMIN 회원은 모든 댓굴 수정 가능
+     *  */
+    @Transactional
+    public void deleteComment(Long id, HttpServletRequest request) {
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request);
         Claims claims;
@@ -127,22 +144,30 @@ public class CommentService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
-                throw new IllegalArgumentException("Token Error");
+                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
             }
 
             // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
             );
 
-            Comment comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
-            );
+            Comment comment = new Comment();
+
+            // 관리자 검증 여부
+            if(user.getRole().name().equals("ADMIN")){
+                // ROLE == ADMIN
+                comment = commentRepository.findById(id).orElseThrow(
+                        () -> new ApiException(ExceptionEnum.INVALID_COMMENT_EXCEPTION)
+                );
+            }else{
+                // ROLE == USER
+                comment = commentRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
+                        () -> new ApiException(ExceptionEnum.UNAUTHORIZED_EXCEPTION)
+                );
+            }
 
             commentRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
         }
     }
 }

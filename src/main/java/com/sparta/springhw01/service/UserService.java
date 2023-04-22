@@ -2,13 +2,15 @@ package com.sparta.springhw01.service;
 
 import com.sparta.springhw01.dto.LoginRequestDto;
 import com.sparta.springhw01.dto.SignupRequestDto;
-import com.sparta.springhw01.dto.SignupResponseDto;
+import com.sparta.springhw01.dto.StatusResponseDto;
 import com.sparta.springhw01.entity.User;
 import com.sparta.springhw01.entity.UserRoleEnum;
+import com.sparta.springhw01.exception.ApiException;
+import com.sparta.springhw01.exception.ExceptionEnum;
 import com.sparta.springhw01.jwt.JwtUtil;
 import com.sparta.springhw01.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    /* 회원가입 */
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
@@ -32,14 +35,14 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new ApiException(ExceptionEnum.DUPLICATE_EXCEPTION);
         }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new ApiException(ExceptionEnum.ADMIN_TOKEN_EXCEPTION);
             }
             role = UserRoleEnum.ADMIN;
         }else role = UserRoleEnum.USER;
@@ -48,20 +51,25 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /* 로그인 */
     @Transactional(readOnly = true)
     public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
-        // 비밀번호 확인
-        if(!user.getPassword().equals(password)){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        Optional<User> user = userRepository.findByUsername(username);
+
+        // 사용자 존재
+        if(!user.isPresent()) {
+            throw new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION);
         }
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
+        // 사용자는 존재하나 비밀번호랑 다를 때
+        if(!user.get().getPassword().equals(password)) {
+            throw new ApiException(ExceptionEnum.PASSWORD_EXCEPTION);
+        }
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
     }
 }

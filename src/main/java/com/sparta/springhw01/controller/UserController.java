@@ -1,9 +1,6 @@
 package com.sparta.springhw01.controller;
 
-import com.sparta.springhw01.dto.LoginRequestDto;
-import com.sparta.springhw01.dto.LoginResponseDto;
-import com.sparta.springhw01.dto.SignupRequestDto;
-import com.sparta.springhw01.dto.SignupResponseDto;
+import com.sparta.springhw01.dto.*;
 import com.sparta.springhw01.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,9 +31,9 @@ public class UserController {
 
     /* 회원가입 api */
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(SignupRequestDto signupRequestDto) {
+    public ResponseEntity<StatusResponseDto> signup(SignupRequestDto signupRequestDto) {
         userService.signup(signupRequestDto);
-        SignupResponseDto res = new SignupResponseDto(
+        StatusResponseDto res = new StatusResponseDto(
                 200,
                 HttpStatus.OK,
                 "회원 가입 성공",
@@ -49,9 +46,9 @@ public class UserController {
     /* 로그인 api */
     @ResponseBody
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseEntity<StatusResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto, response);
-        LoginResponseDto res = new LoginResponseDto(
+        StatusResponseDto res = new StatusResponseDto(
                 200,
                 HttpStatus.OK,
                 "로그인 성공",

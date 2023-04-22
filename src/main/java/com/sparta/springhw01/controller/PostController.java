@@ -3,9 +3,12 @@ package com.sparta.springhw01.controller;
 import com.google.gson.JsonObject;
 import com.sparta.springhw01.dto.PostRequestDto;
 import com.sparta.springhw01.dto.PostResponseDto;
+import com.sparta.springhw01.dto.StatusResponseDto;
 import com.sparta.springhw01.entity.Post;
 import com.sparta.springhw01.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -49,15 +52,15 @@ public class PostController {
 
     /* 게시글 삭제 api */
     @DeleteMapping("/api/posts/{id}")
-    public String deletePost(@PathVariable Long id, HttpServletRequest request){
-        boolean flag = postService.deletePost(id, request);
-        JsonObject jsonObj = new JsonObject();
+    public ResponseEntity<StatusResponseDto> deletePost(@PathVariable Long id, HttpServletRequest request){
+        postService.deletePost(id, request);
 
-        if(flag){
-            jsonObj.addProperty("msg", "게시글 삭제 성공");
-            jsonObj.addProperty("statusCode", "200");
-        }
-
-        return jsonObj.toString();
+        StatusResponseDto res = new StatusResponseDto(
+                200,
+                HttpStatus.OK,
+                "게시글 삭제 성공",
+                null
+        );
+        return new ResponseEntity<>(res, res.getHttpStatus());
     }
 }

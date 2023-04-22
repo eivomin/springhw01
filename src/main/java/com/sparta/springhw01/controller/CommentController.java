@@ -3,8 +3,11 @@ package com.sparta.springhw01.controller;
 import com.google.gson.JsonObject;
 import com.sparta.springhw01.dto.CommentRequestDto;
 import com.sparta.springhw01.dto.CommentResponseDto;
+import com.sparta.springhw01.dto.StatusResponseDto;
 import com.sparta.springhw01.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,7 +20,7 @@ public class CommentController {
 
     /* 댓글 작성 api */
     @PostMapping("/api/comments")
-    public CommentResponseDto createPost(@RequestBody CommentRequestDto requestDto, HttpServletRequest request){
+    public CommentResponseDto createComment(@RequestBody CommentRequestDto requestDto, HttpServletRequest request){
         return commentService.createComment(requestDto, request);
     }
 
@@ -29,15 +32,14 @@ public class CommentController {
 
     /* 댓글 삭제 api */
     @DeleteMapping("/api/comments/{id}")
-    public String deleteComment(@PathVariable Long id, HttpServletRequest request){
-        boolean flag = commentService.deleteComment(id, request);
-        JsonObject jsonObj = new JsonObject();
-
-        if(flag){
-            jsonObj.addProperty("msg", "댓글 삭제 성공");
-            jsonObj.addProperty("statusCode", "200");
-        }
-
-        return jsonObj.toString();
+    public ResponseEntity<StatusResponseDto> deleteComment(@PathVariable Long id, HttpServletRequest request){
+        commentService.deleteComment(id, request);
+        StatusResponseDto res = new StatusResponseDto(
+                200,
+                HttpStatus.OK,
+                "댓글 삭제 성공",
+                null
+        );
+        return new ResponseEntity<>(res, res.getHttpStatus());
     }
 }
