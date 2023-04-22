@@ -6,7 +6,7 @@
 
 1️⃣ Use case
 
-<img width="460" alt="스크린샷 2023-04-19 오전 11 03 23" src="https://user-images.githubusercontent.com/97949070/232947490-2225043b-89cc-45f3-8d20-38f6be570d04.png">
+![스크린샷 2023-04-22 오후 6 04 09](https://user-images.githubusercontent.com/97949070/233778539-6cddb500-bf99-4d83-920d-126eb9867bb2.png)
 
 2️⃣ API 설계
 
