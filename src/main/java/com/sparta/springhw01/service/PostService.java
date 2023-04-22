@@ -49,8 +49,16 @@ public class PostService {
             );
 
             // 요청받은 DTO 로 DB에 저장할 객체 만들기
+            /*
+            *  save() : 영속성 컨텍스트에 저장하는 것이고 실제로 DB 에 저장은 추후 flush 또는 commit 메소드가 실행될 때 이루어짐
+            *  saveAndFlush() : 즉시 DB 에 데이터를 반영함
+            * */
             Post post = postRepository.saveAndFlush(new Post(requestDto, user));
 
+
+            /*
+            * Entity -> Dto 변환 이유
+            * */
             return new PostResponseDto(post);
         } else {
             return null;

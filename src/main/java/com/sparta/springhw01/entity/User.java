@@ -10,13 +10,14 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "users")
+@Entity // @Entity가 붙은 클래스는 JPA가 관리, 엔티티라 한다. JPA를 사용해서 테이블과 매핑할 클래스는 @Entity 필수
+@Table(name = "users") // @Table은 엔티티와 매핑할 테이블 지정
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", unique = true, nullable = false)
+    //자동생성(GeneratredValue) IDENTITY : 데이터베이스에 위임, MYSQL ( SEQUENCE : ORACLE )
+    @Column(name = "user_id", unique = true, nullable = false) // 제약조건 추가
     private Long id;
 
     // nullable: null 허용 여부
