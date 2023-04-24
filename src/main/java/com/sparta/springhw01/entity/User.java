@@ -35,6 +35,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    // EnumType.ORDINAL로 설정하면 Enum Type의 순서가 DB에 저장된다. [0, 1]
+    // 순서가 바뀔 경우 숫자값에 해당하는 value 가 달라질 수 있기 때문에 이는 시스템에 아주 큰 문제를 일으킬 수 있음
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
