@@ -10,8 +10,10 @@ import com.sparta.springhw01.exception.ExceptionEnum;
 import com.sparta.springhw01.jwt.JwtUtil;
 import com.sparta.springhw01.repository.PostRepository;
 import com.sparta.springhw01.repository.UserRepository;
+import com.sparta.springhw01.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,24 +31,7 @@ public class PostService {
 
     /* 게시글 작성 */
     @Transactional
-    public PostResponseDto createPost(PostRequestDto requestDto, HttpServletRequest request) {
-        // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        // 토큰이 있는 경우에만 게시글 등록 가능
-        if (token != null) {
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
-            }
-
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
-            );
+    public PostResponseDto createPost(PostRequestDto requestDto, User user) {
 
             // 요청받은 DTO 로 DB에 저장할 객체 만들기
             /*
@@ -55,14 +40,11 @@ public class PostService {
             * */
             Post post = postRepository.saveAndFlush(new Post(requestDto, user));
 
-
             /*
             * Entity -> Dto 변환 이유
             * */
             return new PostResponseDto(post);
-        } else {
-            return null;
-        }
+
     }
 
     /* 게시글 전체 조회 */
@@ -81,25 +63,7 @@ public class PostService {
     * ADMIN 회원은 모든 게시글 수정 가능
     *  */
     @Transactional
-    public PostResponseDto update(Long id, PostRequestDto requestDto, HttpServletRequest request) {
-        // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        // 토큰이 있는 경우에만 수정 가능
-        if (token != null) {
-            // Token 검증
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
-            }
-
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
-            );
+    public PostResponseDto update(Long id, PostRequestDto requestDto, User user) {
 
             Post post = new Post();
 
@@ -120,35 +84,13 @@ public class PostService {
 
             return new PostResponseDto(post);
 
-        } else {
-            return null;
-        }
     }
 
     /* 게시글 삭제
      * ADMIN 회원은 모든 게시글 삭제 가능
      *  */
     @Transactional
-    public void deletePost(Long id, HttpServletRequest request) {
-        // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        if (token != null) {
-            // Token 검증
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new ApiException(ExceptionEnum.INVALID_TOKEN_EXCEPTION);
-            }
-
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new ApiException(ExceptionEnum.INVALID_USER_EXCEPTION)
-            );
-
-
+    public void deletePost(Long id, User user) {
             Post post = new Post();
 
             // 관리자 검증 여부
@@ -165,7 +107,6 @@ public class PostService {
             }
 
             postRepository.deleteById(id);
-        }
     }
 
     /* 게시글 상세 조회 */

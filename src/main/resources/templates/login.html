@@ -8,21 +8,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
-    <link th:href="@{/style.css}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" >
     <meta charset="UTF-8">
     <title>로그인 페이지</title>
 </head>
 <body>
 <div id="login-form">
-    <div id="login-title">Log into Board</div>
-    <button id="login-kakao-btn" onclick="location.href='https://kauth.kakao.com/oauth/authorize?client_id=&redirect_uri=http://localhost:8080/api/user/kakao/callback&response_type=code'">
+    <div id="login-title">Log into Select Shop</div>
+    <button id="login-kakao-btn" onclick="location.href='https://kauth.kakao.com/oauth/authorize?client_id=05eea047af8bf9e775b31ef1709e0531&redirect_uri=http://localhost:8080/api/user/kakao/callback&response_type=code'">
         카카오로 로그인하기
     </button>
     <button id="login-id-btn" onclick="location.href='/api/user/signup'">
         회원 가입하기
     </button>
     <div class="login-id-label">아이디</div>
-    <input id="username" type="text" name="username" class="login-input-box">
+    <input id="username" type="text" name="username오" class="login-input-box">
 
     <div class="login-id-label">비밀번호</div>
     <input id="password" type="password" name="password" class="login-input-box">

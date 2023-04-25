@@ -5,6 +5,7 @@ import com.sparta.springhw01.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/api/user")
 public class UserController {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     @GetMapping("/signup")
@@ -24,7 +26,7 @@ public class UserController {
         return new ModelAndView("signup");
     }
 
-    @GetMapping("/login")
+    @GetMapping("/login-page")
     public ModelAndView loginPage() {
         return new ModelAndView("login");
     }
@@ -55,6 +57,16 @@ public class UserController {
                 null
         );
         return new ResponseEntity<>(res, res.getHttpStatus());
+    }
+
+    @GetMapping("/forbidden")
+    public ModelAndView getForbidden() {
+        return new ModelAndView("forbidden");
+    }
+
+    @PostMapping("/forbidden")
+    public ModelAndView postForbidden() {
+        return new ModelAndView("forbidden");
     }
 
 }

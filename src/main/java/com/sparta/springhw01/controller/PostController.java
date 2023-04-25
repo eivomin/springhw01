@@ -1,14 +1,15 @@
 package com.sparta.springhw01.controller;
 
-import com.google.gson.JsonObject;
 import com.sparta.springhw01.dto.PostRequestDto;
 import com.sparta.springhw01.dto.PostResponseDto;
 import com.sparta.springhw01.dto.StatusResponseDto;
 import com.sparta.springhw01.entity.Post;
+import com.sparta.springhw01.security.UserDetailsImpl;
 import com.sparta.springhw01.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,8 +29,8 @@ public class PostController {
 
     /* 게시글 작성 api */
     @PostMapping("/api/posts")
-    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, HttpServletRequest request){
-        return postService.createPost(requestDto, request);
+    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.createPost(requestDto, userDetails.getUser());
     }
 
     /* 게시글 전체 목록 조회 api */
@@ -46,14 +47,14 @@ public class PostController {
 
     /* 게시글 수정 api */
     @PutMapping("/api/posts/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
-        return postService.update(id, requestDto, request);
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.update(id, requestDto, userDetails.getUser());
     }
 
     /* 게시글 삭제 api */
     @DeleteMapping("/api/posts/{id}")
-    public ResponseEntity<StatusResponseDto> deletePost(@PathVariable Long id, HttpServletRequest request){
-        postService.deletePost(id, request);
+    public ResponseEntity<StatusResponseDto> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        postService.deletePost(id, userDetails.getUser());
 
         StatusResponseDto res = new StatusResponseDto(
                 200,

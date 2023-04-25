@@ -31,10 +31,13 @@ public enum ExceptionEnum {
     INVALID_COMMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "댓글이 존재하지 않습니다."),
 
     /* 잘못된 예외 처리 */
-    PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "아이디와 비밀번호가 일치하지 않습니다."),
+    ID_PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "아이디와 비밀번호가 일치하지 않습니다."),
 
     /* admin_token 예외 */
-    ADMIN_TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "관리자 암호가 틀려 등록이 불가능합니다.");
+    ADMIN_TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "관리자 암호가 틀려 등록이 불가능합니다."),
+
+    /* 비밀번호 패턴 예외 */
+    PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.");
 
     private final HttpStatus status;
     private final String code;
