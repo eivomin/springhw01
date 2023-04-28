@@ -66,7 +66,7 @@ public class CommentController {
             StatusResponseDto res = new StatusResponseDto(
                     200,
                     HttpStatus.OK,
-                    "게시글 싫어요 성공"
+                    "댓글 싫어요 성공"
             );
             return new ResponseEntity<>(res, res.getHttpStatus());
         }else throw new ApiException(ExceptionEnum.NOT_YET_LIKE_EXCEPTION);
