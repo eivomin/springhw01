@@ -37,7 +37,14 @@ public enum ExceptionEnum {
     ADMIN_TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "관리자 암호가 틀려 등록이 불가능합니다."),
 
     /* 비밀번호 패턴 예외 */
-    PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.");
+    PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다."),
+
+    /* 좋아요 예외 */
+    ALREADY_LIKE_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "좋아요 이력이 존재합니다."),
+
+    /* 좋아요 예외 */
+    NOT_YET_LIKE_EXCEPTION(HttpStatus.BAD_REQUEST, "400", "좋아요 이력이 존재하지 않습니다.");
+
 
     private final HttpStatus status;
     private final String code;

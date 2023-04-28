@@ -1,4 +1,4 @@
-package com.sparta.springhw01;
+package com.sparta.springhw01.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

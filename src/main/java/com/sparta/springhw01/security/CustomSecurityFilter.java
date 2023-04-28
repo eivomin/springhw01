@@ -41,7 +41,8 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
                 throw new IllegalAccessError("비밀번호가 일치하지 않습니다.");
             }
 
-            // 인증 객체 생성 및 등록
+            // 인증 객체 생성 및 등록 (Authentication < SecurityContext < SecurityContextHolder)
+            // SecurityContextHolder내부의 SecurityContext에 Authentication 객체로 저장
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             context.setAuthentication(authentication);

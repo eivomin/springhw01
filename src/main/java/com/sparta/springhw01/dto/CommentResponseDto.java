@@ -15,8 +15,8 @@ public class CommentResponseDto {
     private Long postId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private Long likeCount;
 
-    // Entity를 Dto로 변환
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
         this.contents = comment.getContents();
@@ -24,5 +24,6 @@ public class CommentResponseDto {
         this.postId = comment.getPost().getId();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
+        this.likeCount = comment.getLikeCount();
     }
 }

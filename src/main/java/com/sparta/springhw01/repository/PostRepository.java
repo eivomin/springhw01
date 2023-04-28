@@ -1,6 +1,5 @@
 package com.sparta.springhw01.repository;
 
-import com.sparta.springhw01.dto.PostResponseDto;
 import com.sparta.springhw01.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 

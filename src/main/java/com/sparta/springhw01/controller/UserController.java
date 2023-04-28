@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     @GetMapping("/signup")
@@ -38,8 +37,7 @@ public class UserController {
         StatusResponseDto res = new StatusResponseDto(
                 200,
                 HttpStatus.OK,
-                "회원 가입 성공",
-                null
+                "회원 가입 성공"
         );
         return new ResponseEntity<>(res, res.getHttpStatus());
         //return "redirect:/api/user/login";
@@ -53,8 +51,7 @@ public class UserController {
         StatusResponseDto res = new StatusResponseDto(
                 200,
                 HttpStatus.OK,
-                "로그인 성공",
-                null
+                "로그인 성공"
         );
         return new ResponseEntity<>(res, res.getHttpStatus());
     }

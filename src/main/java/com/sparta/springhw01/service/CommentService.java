@@ -2,13 +2,11 @@ package com.sparta.springhw01.service;
 
 import com.sparta.springhw01.dto.CommentRequestDto;
 import com.sparta.springhw01.dto.CommentResponseDto;
-import com.sparta.springhw01.entity.Comment;
-import com.sparta.springhw01.entity.Post;
-import com.sparta.springhw01.entity.User;
-import com.sparta.springhw01.entity.UserRoleEnum;
+import com.sparta.springhw01.entity.*;
 import com.sparta.springhw01.exception.ApiException;
 import com.sparta.springhw01.exception.ExceptionEnum;
 import com.sparta.springhw01.jwt.JwtUtil;
+import com.sparta.springhw01.repository.CommentLikeRepository;
 import com.sparta.springhw01.repository.CommentRepository;
 import com.sparta.springhw01.repository.PostRepository;
 import com.sparta.springhw01.repository.UserRepository;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-
+import java.util.Optional;
 
 
 @Service
@@ -28,6 +26,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final JwtUtil jwtUtil;
 
     /* 댓글 작성 */
@@ -102,5 +101,43 @@ public class CommentService {
 
             commentRepository.deleteById(id);
 
+    }
+
+    /* 댓글 좋아요 */
+    @Transactional
+    public boolean saveLikes(Long id, User user) {
+        // 1. 해당 댓글 존재 여부
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new ApiException(ExceptionEnum.INVALID_COMMENT_EXCEPTION)
+        );
+
+        //user 좋아요 이력 확인
+        Optional<CommentLike> findCommentLike = commentLikeRepository.findByCommentIdAndUserId(id, user.getId());
+
+        if(findCommentLike.isEmpty()) {
+            commentLikeRepository.save(new CommentLike(user, comment));
+            comment.addLike();
+            return true;
+        }
+        return false;
+    }
+
+    /* 댓글 싫어요 */
+    @Transactional
+    public boolean deleteLikes(Long id, User user) {
+        // 1. 해당 댓글 존재 여부
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new ApiException(ExceptionEnum.INVALID_COMMENT_EXCEPTION)
+        );
+
+        //user 좋아요 이력 확인
+        Optional<CommentLike> findCommentLike = commentLikeRepository.findByCommentIdAndUserId(id, user.getId());
+
+        if(findCommentLike.isPresent()) {
+            commentLikeRepository.deleteById(findCommentLike.get().getId());
+            comment.deleteLike();
+            return true;
+        }
+        return false;
     }
 }

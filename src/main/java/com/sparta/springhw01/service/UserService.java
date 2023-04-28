@@ -42,8 +42,8 @@ public class UserService {
         String email = signupRequestDto.getEmail();
 
         // 회원 중복 확인
-        Optional<User> found = userRepository.findByUsername(username);
-        if (found.isPresent()) {
+        Optional<User> findUser = userRepository.findByUsername(username);
+        if (findUser.isPresent()) {
             throw new ApiException(ExceptionEnum.DUPLICATE_EXCEPTION);
         }
 

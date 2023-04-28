@@ -3,7 +3,8 @@ package com.sparta.springhw01.controller;
 import com.sparta.springhw01.dto.PostRequestDto;
 import com.sparta.springhw01.dto.PostResponseDto;
 import com.sparta.springhw01.dto.StatusResponseDto;
-import com.sparta.springhw01.entity.Post;
+import com.sparta.springhw01.exception.ApiException;
+import com.sparta.springhw01.exception.ExceptionEnum;
 import com.sparta.springhw01.security.UserDetailsImpl;
 import com.sparta.springhw01.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -59,9 +59,39 @@ public class PostController {
         StatusResponseDto res = new StatusResponseDto(
                 200,
                 HttpStatus.OK,
-                "게시글 삭제 성공",
-                null
+                "게시글 삭제 성공"
         );
         return new ResponseEntity<>(res, res.getHttpStatus());
     }
+
+    /* 게시글 좋아요 api */
+    @PostMapping("/api/posts/{id}/like")
+    public ResponseEntity<StatusResponseDto> likePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        boolean likeCheck = postService.saveLikes(id, userDetails.getUser());
+
+        if(likeCheck) {
+            StatusResponseDto res = new StatusResponseDto(
+                    200,
+                    HttpStatus.OK,
+                    "게시글 좋아요 성공"
+            );
+            return new ResponseEntity<>(res, res.getHttpStatus());
+        }else throw new ApiException(ExceptionEnum.ALREADY_LIKE_EXCEPTION);
+    }
+
+    /* 게시글 싫어요 api */
+    @DeleteMapping("/api/posts/{id}/like")
+    public ResponseEntity<StatusResponseDto> dislikePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        boolean dislikeCheck = postService.deleteLikes(id, userDetails.getUser());
+
+        if(dislikeCheck) {
+            StatusResponseDto res = new StatusResponseDto(
+                    200,
+                    HttpStatus.OK,
+                    "게시글 싫어요 성공"
+            );
+            return new ResponseEntity<>(res, res.getHttpStatus());
+        }else throw new ApiException(ExceptionEnum.NOT_YET_LIKE_EXCEPTION);
+    }
+
 }

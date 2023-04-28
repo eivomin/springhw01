@@ -10,6 +10,4 @@ public class StatusResponseDto {
     private int code;
     private HttpStatus httpStatus;
     private String message;
-    private Object data;
-
 }
