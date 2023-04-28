@@ -8,17 +8,17 @@
 
 1️⃣ Use case
 
-![스크린샷 2023-04-22 오후 6 04 09](https://user-images.githubusercontent.com/97949070/233778539-6cddb500-bf99-4d83-920d-126eb9867bb2.png)
+![스크린샷 2023-04-28 오후 6 52 40](https://user-images.githubusercontent.com/97949070/235117590-cf21e14c-d04f-448d-bf01-ab97e1f02b1b.png)
+
 
 2️⃣ API 설계
 
 http://localhost:8080/swagger-ui/
 
-![스크린샷 2023-04-22 오후 5 13 42](https://user-images.githubusercontent.com/97949070/233772072-70547b48-e4a3-46a4-9d20-9e1b0184685c.png)
-
-
+![스크린샷 2023-04-28 오후 6 55 31](https://user-images.githubusercontent.com/97949070/235117629-29a4f946-eed3-4a45-92a4-6f00b7f1f585.png)
 
 3️⃣ ERD
 
-![ERD](https://user-images.githubusercontent.com/97949070/233754312-52cbdf92-0827-4689-bffa-60696a26668c.png)
+![entityManagerFactory(EntityManagerFactoryBuilder)](https://user-images.githubusercontent.com/97949070/235117684-adb4888a-15da-4459-9bf2-6ff43dd304c2.png)
+
 
